@@ -1,7 +1,5 @@
-node_modules
-dist
-.DS_Store
-.runtime
-*.app
 node_modules/
 dist/
+.DS_Store
+.runtime/
+*.app
