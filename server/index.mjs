@@ -32,7 +32,7 @@ function scriptRoot() {
     return process.env.AF_SCRIPT_ROOT;
   }
 
-  return path.resolve(__dirname, "../../../plugins/agent-factory-mac-app/skills/scripts");
+  return path.resolve(appRoot, "plugin/skills/scripts");
 }
 
 function parseBool(value) {
