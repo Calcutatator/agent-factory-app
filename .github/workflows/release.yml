@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Prune dev dependencies
+        run: npm prune --production
+
+      - name: Create .app bundles
+        run: bash scripts/create-macos-apps.sh
+
+      - name: Package zip
+        run: |
+          cd ..
+          zip -r agent-factory-app.zip agent-factory-app \
+            -x "agent-factory-app/.git/*" \
+            -x "agent-factory-app/.github/*" \
+            -x "agent-factory-app/.DS_Store"
+          mv agent-factory-app.zip agent-factory-app/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: agent-factory-app.zip
+          generate_release_notes: true

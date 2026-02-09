@@ -59,7 +59,7 @@ async function http<T>(url: string, init?: RequestInit): Promise<T> {
         const short = text.replace(/\s+/g, " ").slice(0, 180);
         if (short.includes("<!DOCTYPE") || short.startsWith("<")) {
           throw new Error(
-            `request failed: ${response.status}. API returned HTML, not JSON. Confirm backend is running (use Agent Factory Launcher.command).`
+            `request failed: ${response.status}. API returned HTML, not JSON. Is the backend running?`
           );
         }
 
@@ -105,6 +105,7 @@ export default function App() {
   const [count, setCount] = useState(1);
   const [commandTemplate, setCommandTemplate] = useState(buildCommandTemplate("claude"));
   const [railwayToken, setRailwayToken] = useState("");
+  const [walletAddress, setWalletAddress] = useState("");
   const [tokenStatus, setTokenStatus] = useState("");
   const [running, setRunning] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -121,26 +122,27 @@ export default function App() {
     return requirements.railway_auth || railwayToken.trim().length > 0;
   }, [requirements, railwayToken]);
 
+  const hasWallet = useMemo(() => walletAddress.trim().startsWith("0x") && walletAddress.trim().length >= 42, [walletAddress]);
+
   const environmentReady = useMemo(() => {
     if (!requirements) {
       return false;
     }
 
     const providerReady = requirements.claude_installed || requirements.codex_installed;
-    return providerReady && requirements.railway_installed && requirements.git_installed && requirements.bun_installed && hasRailwayAuth;
-  }, [requirements, hasRailwayAuth]);
+    return providerReady && requirements.railway_installed && requirements.git_installed && requirements.bun_installed && hasRailwayAuth && hasWallet;
+  }, [requirements, hasRailwayAuth, hasWallet]);
 
   const setupSteps = useMemo<SetupStep[]>(() => {
     const providerReady = Boolean(requirements?.claude_installed || requirements?.codex_installed);
     const railwayCliReady = Boolean(requirements?.railway_installed);
     const railwayAuthReady = hasRailwayAuth;
-    const readyToRun = environmentReady;
 
     return [
       {
         id: "provider",
         title: "Install Claude Code or Codex",
-        description: "At least one runner is required.",
+        description: "At least one AI runner is required.",
         done: providerReady
       },
       {
@@ -152,17 +154,23 @@ export default function App() {
       {
         id: "railway-auth",
         title: "Connect Railway account",
-        description: "Paste API key once. It saves to Keychain.",
+        description: "Paste your Railway API key below.",
         done: railwayAuthReady
+      },
+      {
+        id: "wallet",
+        title: "Enter wallet address",
+        description: "EVM address (0x...) to receive x402 payments.",
+        done: hasWallet
       },
       {
         id: "run",
         title: "Pick count and click Create Agents",
         description: "Choose 1-100 and run batch deployment.",
-        done: readyToRun
+        done: environmentReady
       }
     ];
-  }, [environmentReady, hasRailwayAuth, requirements]);
+  }, [environmentReady, hasRailwayAuth, hasWallet, requirements]);
 
   const completedSetupSteps = useMemo(
     () => setupSteps.filter((step) => step.done).length,
@@ -232,6 +240,7 @@ export default function App() {
           count,
           commandTemplate,
           railwayToken: railwayToken.trim() || null,
+          walletAddress: walletAddress.trim() || null,
           workRoot: null
         })
       });
@@ -245,7 +254,7 @@ export default function App() {
           const short = text.replace(/\s+/g, " ").slice(0, 180);
           if (short.includes("<!DOCTYPE") || short.startsWith("<")) {
             throw new Error(
-              `request failed: ${response.status}. API returned HTML, not JSON. Re-open the app with Agent Factory Launcher.command.`
+              `request failed: ${response.status}. API returned HTML, not JSON. Is the backend running?`
             );
           }
           throw new Error(`request failed: ${response.status}. Response: ${short}`);
@@ -328,7 +337,7 @@ export default function App() {
     <main className="app-shell">
       <section className="panel">
         <h1>Agent Factory</h1>
-        <p className="subtitle">Guided launcher for non-dev users. No terminal commands required.</p>
+        <p className="subtitle">Create and deploy paid Lucid Agents. No terminal required.</p>
 
         <section className="guide">
           <div className="guide-head">
@@ -435,6 +444,20 @@ export default function App() {
             </div>
           </label>
         ) : null}
+
+        <label>
+          Wallet Address
+          <input
+            value={walletAddress}
+            onChange={(e) => setWalletAddress(e.target.value)}
+            placeholder="0x... (EVM address for receiving x402 payments)"
+            type="text"
+            disabled={running}
+          />
+          {walletAddress.trim() && !hasWallet ? (
+            <span className="warn" style={{ fontSize: 12, marginTop: 4, display: "block" }}>Must be a valid 0x address (42+ chars)</span>
+          ) : null}
+        </label>
 
         <details className="advanced">
           <summary>Advanced: command template</summary>

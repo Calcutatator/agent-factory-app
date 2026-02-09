@@ -1,15 +1,33 @@
 {
-  "name": "agent-factory-web",
-  "private": true,
-  "version": "0.1.0",
+  "name": "@calcutatator/agent-factory-app",
+  "version": "0.2.0",
   "type": "module",
+  "description": "One-click macOS app for deploying Lucid Agents in batches",
+  "bin": {
+    "agent-factory-app": "./bin/launch.mjs"
+  },
+  "files": [
+    "bin/",
+    "server/",
+    "src/",
+    "plugin/",
+    "scripts/",
+    "dist/",
+    "index.html",
+    "package.json",
+    "tsconfig.json",
+    "vite.config.ts",
+    "Agent Factory Launcher.command",
+    "Agent Factory Stop.command",
+    "Install Agent Factory Apps.command"
+  ],
   "scripts": {
     "dev": "concurrently -k \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "vite",
     "dev:server": "node server/index.mjs",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "start": "node server/index.mjs"
+    "start": "node server/index.mjs",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -25,5 +43,10 @@
     "concurrently": "^9.1.0",
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Calcutatator/agent-factory-app"
   }
 }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Factory</title>
+  <style>
+    :root { font-family: "Avenir Next", "Helvetica Neue", sans-serif; color: #1c1c1c; }
+    * { box-sizing: border-box; margin: 0; }
+    body { min-height: 100vh; background: radial-gradient(circle at top right, #ffe4bf, #fffdf8 55%); display: grid; place-items: center; padding: 24px; }
+    .card { width: min(640px, 100%); background: #fff; border: 1px solid #f0d8b2; border-radius: 16px; padding: 40px; box-shadow: 0 12px 40px rgba(95,61,16,0.12); text-align: center; }
+    h1 { font-size: 32px; margin-bottom: 8px; }
+    .tagline { color: #6d5b44; margin-bottom: 28px; font-size: 17px; }
+    .features { text-align: left; margin: 0 auto 28px; max-width: 400px; }
+    .features li { margin: 8px 0; line-height: 1.5; }
+    .dl-btn { display: inline-block; background: #c15800; color: #fff; border: none; border-radius: 12px; padding: 14px 32px; font-size: 17px; font-weight: 700; text-decoration: none; cursor: pointer; margin-bottom: 20px; }
+    .dl-btn:hover { background: #a34a00; }
+    .divider { color: #b8a68c; margin: 16px 0; font-size: 14px; }
+    .npx-box { background: #f8f5ef; border: 1px solid #efe4d3; border-radius: 10px; padding: 12px 16px; display: inline-flex; align-items: center; gap: 10px; font-family: "SF Mono", Menlo, Monaco, monospace; font-size: 14px; cursor: pointer; position: relative; }
+    .npx-box:hover { background: #f0ebdf; }
+    .npx-box .copy-hint { font-family: "Avenir Next", sans-serif; font-size: 11px; color: #8b7a60; }
+    .prereqs { margin-top: 28px; font-size: 13px; color: #8b7a60; }
+    .prereqs a { color: #c15800; }
+    footer { margin-top: 24px; font-size: 12px; color: #b8a68c; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Agent Factory</h1>
+    <p class="tagline">Create and deploy paid Lucid Agents. No terminal required.</p>
+
+    <ul class="features">
+      <li>Guided setup checks all prerequisites</li>
+      <li>Choose how many agents to deploy (1-100)</li>
+      <li>Live streaming output as agents are built</li>
+      <li>Agents deploy to Railway with x402 payments</li>
+    </ul>
+
+    <a class="dl-btn" href="https://github.com/Calcutatator/agent-factory-app/releases/latest/download/agent-factory-app.zip">
+      Download for Mac
+    </a>
+
+    <p class="divider">or run with one command</p>
+
+    <div class="npx-box" onclick="navigator.clipboard.writeText('npx @calcutatator/agent-factory-app'); this.querySelector('.copy-hint').textContent = 'Copied!'">
+      <code>npx @calcutatator/agent-factory-app</code>
+      <span class="copy-hint">click to copy</span>
+    </div>
+
+    <p class="prereqs">
+      Requires: <a href="https://nodejs.org">Node.js 18+</a> and one of
+      <a href="https://code.claude.com/docs/en/overview">Claude Code</a> or
+      <a href="https://developers.openai.com/codex/">Codex</a>.
+      Also needs <a href="https://docs.railway.com/">Railway CLI</a> and
+      <a href="https://bun.sh">Bun</a>.
+    </p>
+
+    <footer>
+      <a href="https://github.com/Calcutatator/agent-factory-app" style="color: #c15800">GitHub</a>
+    </footer>
+  </div>
+</body>
+</html>

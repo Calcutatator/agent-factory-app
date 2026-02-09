@@ -25,7 +25,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const appRoot = path.resolve(__dirname, "..");
 const distDir = path.join(appRoot, "dist");
-const repoRoot = path.resolve(appRoot, "../..");
+const repoRoot = process.env.SKILLS_MARKET_ROOT || appRoot;
 
 function scriptRoot() {
   if (process.env.AF_SCRIPT_ROOT) {
@@ -227,6 +227,7 @@ app.post("/api/run-batch", async (req, res) => {
   const count = Number(req.body?.count || 0);
   const commandTemplate = String(req.body?.commandTemplate || "").trim();
   const requestedToken = String(req.body?.railwayToken || "").trim();
+  const walletAddress = String(req.body?.walletAddress || "").trim();
   const workRoot = String(req.body?.workRoot || "").trim();
   const timeoutRaw = Number(req.body?.runTimeoutSeconds ?? 1800);
   const runTimeoutSeconds = Number.isInteger(timeoutRaw)
@@ -254,7 +255,8 @@ app.post("/api/run-batch", async (req, res) => {
       AGENT_FACTORY_CWD: repoRoot,
       RUN_TIMEOUT_SECONDS: String(runTimeoutSeconds),
       RUN_HEARTBEAT_SECONDS: "15",
-      ...(token ? { RAILWAY_TOKEN: token } : {})
+      ...(token ? { RAILWAY_TOKEN: token } : {}),
+      ...(walletAddress ? { PAYMENTS_RECEIVABLE_ADDRESS: walletAddress } : {})
     };
 
     const result = await runProcess("/bin/bash", [batchScript, String(count), resolvedWorkRoot], env);
@@ -276,6 +278,7 @@ app.post("/api/run-batch-stream", async (req, res) => {
   const count = Number(req.body?.count || 0);
   const commandTemplate = String(req.body?.commandTemplate || "").trim();
   const requestedToken = String(req.body?.railwayToken || "").trim();
+  const walletAddress = String(req.body?.walletAddress || "").trim();
   const workRoot = String(req.body?.workRoot || "").trim();
   const timeoutRaw = Number(req.body?.runTimeoutSeconds ?? 1800);
   const runTimeoutSeconds = Number.isInteger(timeoutRaw)
@@ -303,7 +306,8 @@ app.post("/api/run-batch-stream", async (req, res) => {
       AGENT_FACTORY_CWD: repoRoot,
       RUN_TIMEOUT_SECONDS: String(runTimeoutSeconds),
       RUN_HEARTBEAT_SECONDS: "15",
-      ...(token ? { RAILWAY_TOKEN: token } : {})
+      ...(token ? { RAILWAY_TOKEN: token } : {}),
+      ...(walletAddress ? { PAYMENTS_RECEIVABLE_ADDRESS: walletAddress } : {})
     };
 
     res.setHeader("Content-Type", "application/x-ndjson");
